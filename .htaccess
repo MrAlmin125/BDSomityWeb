@@ -1,0 +1,75 @@
+
+# =====================================================
+# Association Management System
+# InfinityFree Compatible - Safe Configuration
+# =====================================================
+
+# Disable directory listing
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+# -----------------------------------------------------
+# Security Headers
+# -----------------------------------------------------
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# -----------------------------------------------------
+# Protect Sensitive File Extensions
+# -----------------------------------------------------
+<FilesMatch "\.(sql|log|env|ini|bak|old|orig|conf|sh)$">
+    Require all denied
+</FilesMatch>
+
+# Protect Configuration Files
+<FilesMatch "^(functions|database)\.php$">
+    Require all denied
+</FilesMatch>
+
+# -----------------------------------------------------
+# URL Rewriting and Upload Protection
+# -----------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block direct PHP execution inside uploads
+    RewriteRule ^uploads/.*\.php$ - [F,L,NC]
+
+    # Extensionless URLs: /members -> /members.php
+    # Do not rewrite existing files or directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^([^/.]+)/?$ $1.php [END]
+
+</IfModule>
+
+# -----------------------------------------------------
+# GZIP Compression
+# -----------------------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# -----------------------------------------------------
+# Browser Caching
+# -----------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/gif "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+</IfModule>
+
+# =====================================================
+# End of Configuration
+# =====================================================
